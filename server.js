@@ -64,3 +64,7 @@ app.listen(PORT, () => {
     console.log(`👉 Игра: https://localhost:${PORT}/game`);
     console.log(`👉 API: https://localhost:${PORT}/api/questions`);
 });
+// Обработчик для несуществующих маршрутов
+app.use((req, res) => {
+    res.status(404).sendFile(__dirname + '/404.html');
+});
