@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель Викторины</title>
+    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1><i class="fas fa-cog"></i>Админ-панель</h1>
+        </div>
+        <div class="admin-nav">
+            <button class="nav-btn active" data-section="questions">
+                <i class="fas fa-list"></i> Все вопросы
+            </button>
+            <button class="nav-btn" data-section="add">
+                <i class="fas fa-plus"></i> Добавить вопрос
+            </button>
+            <button class="nav-btn" data-section="stats">
+                <i class="fas fa-chart-bar"></i> Дашборд 
+            </button>
+        </div>
+        <main class="admin-main">
+            <!-- Секция списка вопросов -->
+            <section id="questions-section" class="section active"> 
+                <div class="filters">
+                    <input type="text" id="search-questions" placeholder="Поиск по тексту вопроса...">
+                    <select id="filter-difficulty">
+                        <option value="">Все уровни сложности</option>
+                        <option value="1">Легкий</option>
+                        <option value="2">Средний</option>
+                        <option value="3">Сложный</option>
+                    </select>
+                    <button id="refresh-questions" class="refresh-btn">
+                        <i class="fas fa-sync-alt"></i> Обновить
+                    </button>
+                </div>
+                <div class="questions-list" id="questions-list">
+                    <!-- Вопросы будут загружены здесь -->
+                </div>
+            </section>
+            <!-- Секция добавления вопроса -->
+            <section id="add-section" class="section">
+                <h2 id="form-title">Добавить новый вопрос</h2>
+                <form id="add-question-form" class="question-form">
+                    <input type="hidden" id="question-id"> 
+                    <div class="form-group">
+                        <label for="question-text">Текст вопроса:</label>
+                        <textarea id="question-text" required placeholder="Введите текст вопроса..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Варианты ответов:</label>
+                        <div class="options-grid">
+                            <div class="option-input-group">
+                                <label>Вариант 1:</label>
+                                <input type="text" id="option1" required placeholder="Первый вариант ответа">
+                            </div>
+                            <div class="option-input-group">
+                                <label>Вариант 2:</label>
+                                <input type="text" id="option2" required placeholder="Второй вариант ответа">
+                            </div>
+                            <div class="option-input-group">
+                                <label>Вариант 3:</label>
+                                <input type="text" id="option3" required placeholder="Третий вариант ответа">
+                            </div>
+                            <div class="option-input-group">
+                                <label>Вариант 4:</label>
+                                <input type="text" id="option4" required placeholder="Четвертый вариант ответа">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="correct-answer">Правильный ответ:</label>
+                            <select id="correct-answer" required>
+                                <option value="1">Вариант 1</option>
+                                <option value="2">Вариант 2</option>
+                                <option value="3">Вариант 3</option>
+                                <option value="4">Вариант 4</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="difficulty">Сложность:</label>
+                            <select id="difficulty">
+                                <option value="1">Легкий</option>
+                                <option value="2" selected>Средний</option>
+                                <option value="3">Сложный</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Сохранить вопрос
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="clear-form">
+                            <i class="fas fa-times"></i> Очистить форму
+                        </button>
+                    </div>
+                </form>
+            </section>
+            <!-- Секция статистики -->
+            <section id="stats-section" class="section">
+                <h2>Статистика базы данных</h2>
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Всего вопросов</h3>
+                            <p id="total-questions" class="stat-number">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Легкие вопросы</h3>
+                            <p id="easy-count" class="stat-number">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-balance-scale"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Средние вопросы</h3>
+                            <p id="medium-count" class="stat-number">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Сложные вопросы</h3>
+                            <p id="hard-count" class="stat-number">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="actions-panel">
+                    <h3>Действия</h3>
+                    <div class="actions-grid">
+                        <button id="test-connection" class="action-btn">
+                            <i class="fas fa-plug"></i> Проверить соединение
+                        </button>
+                        <button id="reload-data" class="action-btn">
+                            <i class="fas fa-sync-alt"></i> Обновить данные
+                        </button>
+                        <a href="/game" target="_blank" class="action-btn">
+                            <i class="fas fa-gamepad"></i> Открыть игру
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="admin.js"></script>
+</body>
+</html>

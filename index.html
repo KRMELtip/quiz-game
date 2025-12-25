@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <!-- Кодировка и адаптивность -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Викторина - Главная</title>
+    <style>
+        /* Сброс стандартных отступов и использование border-box для упрощения расчетов */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }  
+        /* Фон с градиентом и центрирование контента */
+        body {
+            background: linear-gradient(135deg, #415f54, #385348);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        /* Основной контейнер с белым фоном и тенями */
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        /* Заголовок "Викторина" */
+        h1 {
+            color: #416743;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+        /* Описание под заголовком */
+        p {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+        /* Контейнер для ссылок-кнопок */
+        .links {
+            display: grid;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        /* Базовые стили для кнопок */
+        .btn {
+            display: block;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: all 0.3s;
+            text-align: center;
+            border: none;
+            cursor: pointer;
+        }
+        /* Основная кнопка (Играть в викторитну) */
+        .btn-primary {
+            background: linear-gradient(to right, #416743, #416741);
+            color: white;
+        }
+        
+        /* Эффект при наведении на основную кнопку */
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(76, 175, 80, 0.3);
+        }
+        
+        /* Вторичная кнопка (аАдмин-панель) */
+        .btn-secondary {
+            background: linear-gradient(to right, rgb(74, 77, 79), rgb(89, 99, 108));
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Основной контейнер страницы -->
+    <div class="container">
+        <h1>Викторина</h1>
+        <p>Добро пожаловать в систему викторины! Выберите, что вы хотите сделать:</p>
+        <!-- Блок с кнопками-ссылками -->
+        <div class="links">
+            <!-- Кнопка для начала игры -->
+            <a href="/game" class="btn btn-primary">🎮 Играть в викторину</a>
+            <!-- Кнопка для перехода в панель администратора -->
+            <a href="/admin" class="btn btn-secondary">⚙️ Админ - панель</a>
+        </div>
+    </div>
+</body>
+</html>

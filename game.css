@@ -1,0 +1,306 @@
+/* Общие стили для всех элементов */
+* {
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+    font-family: 'Arial', sans-serif; 
+}
+
+/* Стили для body */
+body {
+    background: linear-gradient(135deg, #415f54, #2d443c); 
+    min-height: 100vh; 
+    padding: 20px; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    position: relative; 
+}
+
+/* Кнопка "Главная" в левом верхнем углу */
+.home-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 12px 25px;
+    background: white;
+    color: #416743;
+    text-decoration: none;
+    border-radius: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: bold;
+    transition: all 0.3s;
+    z-index: 100;
+}
+
+.home-button:hover {
+    background: #416743;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(65, 103, 67, 0.3);
+}
+
+/* Основной контейнер */
+.container {
+    background: white; 
+    border-radius: 20px;
+    padding: 30px; 
+    width: 100%; 
+    max-width: 800px; 
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3); 
+    margin-top: 20px; 
+}
+
+/* Шапка */
+header {
+    text-align: center; 
+    margin-bottom: 30px; 
+}
+
+/* Заголовок h1 ("Викторина") */
+h1 {
+    color: #333; 
+    font-size: 2.5em; 
+    margin-bottom: 15px; 
+    background: linear-gradient(to right, #416743); 
+    -webkit-background-clip: text; 
+    -webkit-text-fill-color: transparent; 
+}
+
+/* Блок статистики */
+.stats {
+    display: flex; 
+    justify-content: space-around; 
+    background: #f8f9fa; 
+    padding: 15px; 
+    border-radius: 10px; 
+    margin-top: 15px; 
+}
+
+/* Метка статистики */
+.stat-label {
+    display: block; 
+    font-size: 0.9em; 
+    color: #383838; 
+    margin-bottom: 5px; 
+}
+
+/* Значение статистики */
+.stat-value {
+    font-size: 1.8em; 
+    font-weight: bold; 
+    color: #3d6c3e; 
+}
+
+/* Таймер  */
+#timer {
+    color: rgb(0, 0, 0); 
+    font-weight: bold;
+}
+
+/* Класс для результата с истекшим временем */
+.result-timeout {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Контейнер вопроса */
+.question-container {
+    background: #f8f9fa; 
+    padding: 25px; 
+    border-radius: 15px;
+    margin-bottom: 20px; 
+}
+
+/* Текст вопроса */
+#question-text {
+    font-size: 1.4em; 
+    margin-bottom: 25px; 
+    color: #333; 
+    line-height: 1.5; 
+    text-align: center; 
+}
+
+/* Контейнер вариантов ответов */
+.options {
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 15px; 
+}
+
+/* Кнопка варианта ответа */
+.option-btn {
+    padding: 15px; 
+    background: white; 
+    border: 2px solid #e0e0e0; 
+    border-radius: 10px; 
+    font-size: 1em; 
+    cursor: pointer; 
+    transition: all 0.3s; 
+    text-align: left; 
+}
+
+/* Эффект при наведении (кроме отключенных кнопок) */
+.option-btn:hover:not(:disabled) {
+    background: #f5f5f5; 
+    transform: translateY(-2px); 
+    border-color: #416743; 
+}
+
+/* Стиль для правильного ответа */
+.option-btn.correct {
+    background: #416743; 
+    color: white; 
+    border-color: #416743 !important; 
+}
+
+/* Стиль для неправильного ответа */
+.option-btn.wrong {
+    background: #8e3d37; 
+    color: white; 
+    border-color: #8e3d37 !important; 
+}
+
+/* Стиль для отключенной кнопки */
+.option-btn:disabled {
+    cursor: not-allowed; 
+    opacity: 0.7; 
+}
+
+/* Блок результата */
+#result {
+    text-align: center; 
+    padding: 15px;
+    margin: 20px 0; 
+    border-radius: 10px; 
+    font-weight: bold; 
+    font-size: 1.1em; 
+    min-height: 50px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+}
+
+/* Класс для конечного результата */
+.result-end {
+    background: #e3f2fd; 
+    color: #d8dfe4; 
+    border: 1px solid #bbdefb; 
+    padding: 20px; 
+    flex-direction: column; 
+    gap: 10px; 
+}
+
+/* Сообщение о времени */
+.timeout-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.timeout-text {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.timeout-subtext {
+    color: #666;
+    font-size: 0.9em;
+    font-weight: normal;
+}
+
+/* Панель управления */
+.controls {
+    display: flex; 
+    justify-content: center; 
+    gap: 20px; 
+    margin-top: 30px; 
+}
+
+/* Общий стиль для кнопок */
+.btn {
+    padding: 12px 30px; 
+    border: none; 
+    border-radius: 25px; 
+    font-size: 1em; 
+    font-weight: bold; 
+    cursor: pointer; 
+    transition: all 0.3s; 
+    min-width: 180px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 10px; 
+}
+
+/* Кнопка "Начать игру" */
+.btn-primary {
+    background: linear-gradient(to right, #416743, #376739); 
+    color: white; 
+}
+
+/* Эффект при наведении на кнопку */
+.btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px); 
+    box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4); 
+}
+
+/* Кнопка "Следующиц вопрос" */
+.btn-secondary {
+    background: linear-gradient(to right, #FF9800, #F57C00); 
+    color: white; 
+}
+
+/* Эффект при наведении на кнопку */
+.btn-secondary:hover:not(:disabled) {
+    transform: translateY(-2px); 
+    box-shadow: 0 5px 15px rgba(255, 152, 0, 0.4); 
+}
+
+/* Отключенная кнопка */
+.btn:disabled {
+    background: #cccccc; 
+    cursor: not-crosshair; 
+
+}
+
+/* Кнопка "Закончить игру" */
+.btn-finish {
+    background: linear-gradient(to right, #416743, #376739);
+    color: white;
+}
+
+.btn-finish:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 600px) {
+    .container {
+        padding: 20px; 
+        margin-top: 60px; 
+    }
+    .home-button {
+        top: 10px;
+        left: 10px;
+        padding: 10px 15px;
+        font-size: 0.9em;
+    }
+    .options {
+        grid-template-columns: 1fr; 
+    }
+    .controls {
+        flex-direction: column; 
+    }  
+    .btn {
+        width: 100%; 
+    }}

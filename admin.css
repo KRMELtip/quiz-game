@@ -1,0 +1,600 @@
+/* Сброс стандартных стилей браузера для всех элементов */
+* {
+    margin: 0;          
+    padding: 0;        
+    box-sizing: border-box; 
+    font-family: 'Arial', sans-serif; 
+}
+
+/* Стили для всего тела документа */
+body {
+    background: rgb(101, 101, 100);
+    min-height: 100vh;
+    color: #333;     
+    margin-bottom: 20px; 
+}
+
+/* Основной контейнер, ограничивающий ширину контента */
+.admin-container {
+    
+    max-width: 1200px;  
+    margin: 0 auto;      
+    background: white;    
+    min-height: 100vh;    
+    box-shadow: 0 0 40px rgba(0,0,0,0.2); 
+    display: flex;        
+    flex-direction: column; 
+}
+
+
+/* Шапка */
+.admin-header {
+    background: #416743;
+    background: linear-gradient(to right, #2a3833, #416743); 
+    color: white;           
+    padding: 20px 30px;    
+    display: flex;           
+    justify-content: space-between; 
+    align-items: center;    
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+}
+
+/* Заголовок в шапке */
+.admin-header h1 {
+    text-align: center; 
+    font-size: 24px;       
+    display: flex;          
+    align-items: center;    
+    gap: 15px;             
+}
+
+/* Контейнер для кнопок в шапке */
+.header-actions {
+    /* Стили применяются к дочерним элементам */
+}
+
+/* Стили для кнопки "Главная" */
+.header-actions .home-btn {
+    background: rgba(255, 255, 255, 0.1); 
+    color: white;                       
+    padding: 10px 20px;                
+    border-radius: 25px;                 
+    text-decoration: none;              
+    display: flex;                       
+    align-items: center;                 
+    gap: 8px;                           
+    font-weight: bold;                    
+    border: 2px solid transparent;      
+    transition: all 0.3s;                
+}
+
+/* Состояние при наведении на кнопку */
+.header-actions .home-btn:hover {
+    background: rgba(255, 255, 255, 0.2); 
+    border-color: white;                 
+    transform: translateY(-2px);         
+}
+
+/* Навигационная панель */
+.admin-nav {
+    background: #f8f9fa;     
+    padding: 15px 30px;      
+    display: flex;           
+    gap: 10px;              
+    border-bottom: 1px solid #eee; 
+}
+
+/* Базовая стилизация кнопок навигации */
+.nav-btn {
+    background: white;      
+    color: #666;           
+    border: 2px solid #e0e0e0; 
+    padding: 12px 25px;      
+    border-radius: 25px;      
+    font-size: 16px;        
+    cursor: pointer;        
+    transition: all 0.3s;   
+    display: flex;           
+    align-items: center;     
+    gap: 8px;                 
+    font-weight: bold;       
+}
+
+/* Состояние при наведении на кнопку навигации */
+.nav-btn:hover {
+    background: #98ff9845;     
+    border-color: #416743;   
+}
+
+/* Активная кнопка навигации (текущий раздел) */
+.nav-btn.active {
+    background: #416743;      
+    color: white;            
+    border-color: #416743;   
+}
+
+/* Основная область контента */
+.admin-main {
+    flex: 1;                
+    padding: 30px;          
+    background: #f8f9fa;    
+}
+
+/* Стили для всех секций (вопросы, статистика, настройки) */
+.section {
+    display: none;         
+    animation: fadeIn 0.3s ease; 
+}
+
+/* Активная (видимая) секция */
+.section.active {
+    display: block;          
+}
+
+/* Ключевые кадры для анимации плавного появления */
+@keyframes fadeIn {
+    from { 
+        opacity: 0;          
+        transform: translateY(10px); 
+    }
+    to { 
+        opacity: 1;           
+        transform: translateY(0);    
+    }
+}
+
+/* Стили для заголовков второго уровня */
+h2 {
+    color: #454d55;         
+    margin-bottom: 25px;    
+    padding-bottom: 15px;   
+    border-bottom: 3px solid #416743; 
+    font-size: 24px;        
+}
+
+/* Контейнер для элементов фильтрации */
+.filters {
+    display: flex;           
+    gap: 15px;              
+    margin-bottom: 25px;   
+    background: white;      
+    padding: 20px;          
+    border-radius: 10px;    
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+}
+
+/* Поля ввода и выпадающие списки в фильтрах */
+.filters input,
+.filters select {
+    flex: 1;                 
+    padding: 12px 15px;     
+    border: 2px solid #e0e0e0; 
+    border-radius: 8px;      
+    font-size: 16px;        
+    transition: all 0.3s;  
+}
+
+/* Состояние при фокусе на поле ввода/выборе */
+.filters input:focus,
+.filters select:focus {
+    outline: none;          
+    border-color: #416743;   
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1); 
+}
+
+/* Стили для кнопки обновления данных */
+.refresh-btn {
+    background: #856404;    
+    color: white;            
+    border: none;          
+    padding: 12px 25px;    
+    border-radius: 8px;     
+    cursor: pointer;        
+    display: flex;          
+    align-items: center;    
+    gap: 8px;               
+    font-weight: bold;       
+    transition: all 0.3s;    
+}
+
+/* Состояние при наведении на кнопку обновления */
+.refresh-btn:hover {
+    transform: translateY(-2px); 
+}
+
+/* Контейнер для списка вопросов */
+.questions-list {
+    display: grid;          
+    gap: 20px;               
+}
+
+/* Стили для отдельной карточки вопроса */
+.question-item {
+    background: white;      
+    border-radius: 12px;   
+    padding: 25px;          
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border-left: 5px solid #416743;
+}
+
+/* Заголовок карточки вопроса */
+.question-header {
+    margin-bottom: 20px;     
+}
+
+/* Текст вопроса */
+.question-header h3 {
+    font-size: 18px;         
+    color: #414e5a;         
+    margin-bottom: 10px;    
+    line-height: 1.5;       
+}
+
+/* Контейнер для мета-информации (сложность, категория и т.д.) */
+.question-meta {
+    display: flex;         
+    gap: 12px;             
+    flex-wrap: wrap;       
+}
+
+/* Базовые стили для бейджа сложности */
+.difficulty {
+    padding: 6px 12px;      
+    border-radius: 20px; 
+    font-size: 14px;        
+    font-weight: 600;      
+    color: white;         
+}
+
+/* Сложность 1 - Легкий */
+.difficulty.level-1 { 
+    background: #416743;     
+}
+
+/* Сложность 2 - Средний */
+.difficulty.level-2 { 
+    background: #846c47;    
+}
+
+/* Сложность 3 - Сложный */
+.difficulty.level-3 { 
+    background: #8e3d37;    
+}
+
+/* Контейнер для вариантов ответов */
+.question-options {
+    display: grid;                              
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+    gap: 12px;                                 
+    margin: 20px 0;                            
+}
+
+/* Базовые стили для каждого варианта ответа */
+.question-options .option {
+    padding: 15px;                             
+    background: #f8f9fa;                      
+    border-radius: 8px;                        
+    border-left: 4px solid #ddd;              
+    position: relative;                       
+}
+
+/* Стили для варианта ответа, который отмечен как правильный */
+.question-options .option.correct {
+    background: #d4edda;                      
+    border-left-color: #416743;                
+    color: #155724;                            
+    font-weight: bold;                       
+}
+
+/* Добавляем галочку для правильного ответа */
+.question-options .option.correct::after {
+    content: '✓';                             
+    position: absolute;                      
+    right: 15px;                              
+    top: 50%;                                 
+    transform: translateY(-50%);             
+    color: #416743;                            
+    font-weight: bold;                         
+}
+
+/* Контейнер для кнопок действий (редактировать, удалить) */
+.question-actions {
+    display: flex;         
+    gap: 12px;              
+    flex-wrap: wrap;        
+    margin-top: 20px;     
+    padding-top: 20px;       
+    border-top: 1px solid #eee; 
+}
+
+/* Базовые стили для кнопок действий */
+.action-btn {
+    padding: 10px 20px;    
+    border: none;          
+    border-radius: 6px;    
+    font-size: 14px;       
+    cursor: pointer;        
+    display: flex;      
+    align-items: center;     
+    gap: 8px;                
+    transition: all 0.3s;    
+    font-weight: 600;       
+    text-decoration: none;  
+}
+
+/* Стили для сообщения, когда вопросы отсутствуют */
+.no-questions {
+    text-align: center;      
+    padding: 50px;          
+    color: #7f8c8d;        
+    font-size: 18px;       
+    background: white;      
+    border-radius: 12px;   
+    border: 2px dashed #ddd; 
+}
+
+/* Контейнер для формы */
+.question-form {
+    background: white;      
+    padding: 30px;          
+    border-radius: 12px;    
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+    max-width: 800px;       
+    margin: 0 auto;         
+}
+
+/* Стили для группы полей формы */
+.form-group {
+    margin-bottom: 25px;     /
+}
+
+/* Метки (labels) для полей формы */
+.form-group label {
+    display: block;       
+    margin-bottom: 8px;     
+    font-weight: 600;       
+    color: #2c3e50;        
+    font-size: 16px;        
+}
+
+/* Поля ввода текста и выпадающие списки */
+.form-group textarea,
+.form-group input[type="text"],
+.form-group select {
+    width: 100%;             
+    padding: 12px 15px;      
+    border: 2px solid #e0e0e0; 
+    border-radius: 8px;     
+    font-size: 16px;        
+    transition: all 0.3s;    
+}
+
+/* Текстовое поле  */
+.form-group textarea {
+    min-height: 120px;      
+    resize: vertical;        
+    font-family: inherit;  
+}
+
+/* Состояние при фокусе на полях формы */
+.form-group textarea:focus,
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;           
+    border-color: #416743;  
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1); 
+}
+
+/* Контейнер для вариантов ответов в форме */
+.options-grid {
+    display: grid;                              
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+    gap: 15px;                                 
+}
+
+/* Группа для каждого варианта ответа в форме */
+.option-input-group label {
+    color: #666;             
+    font-size: 14px;       
+    margin-bottom: 5px;     
+}
+
+/* Строка формы для расположения полей рядом */
+.form-row {
+    display: grid;                           
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+    gap: 20px;                                
+    margin-top: 20px;                           
+}
+
+/* Контейнер для кнопок формы */
+.form-actions {
+    display: flex;           
+    gap: 15px;               
+    margin-top: 30px;       
+    flex-wrap: wrap;        
+}
+
+/* Общие стили для всех кнопок */
+.btn {
+    padding: 14px 28px;      
+    border: none;          
+    border-radius: 25px;     
+    font-size: 16px;        
+    cursor: pointer;        
+    display: inline-flex;    
+    align-items: center;     
+    gap: 10px;             
+    font-weight: 600;      
+    transition: all 0.3s;   
+    text-decoration: none;   
+}
+
+/* Стили для основной кнопки (например, "Сохранить") */
+.btn-primary {
+    background: linear-gradient(to right, #416743, #45a049); 
+    color: white;           
+}
+
+/* Состояние при наведении на основную кнопку */
+.btn-primary:hover {
+    background: linear-gradient(to right, #45a049, #3d8b40);
+    transform: translateY(-3px);          
+    box-shadow: 0 6px 15px rgba(76, 175, 80, 0.3); 
+}
+
+/* Стили для вторичной кнопки (например, "Отмена") */
+.btn-secondary {
+    background: #6c757d;     
+    color: white;            
+}
+
+/* Состояние при наведении на вторичную кнопку */
+.btn-secondary:hover {
+    background: #5a6268;    
+    transform: translateY(-3px); 
+}
+
+/* Стиль для кнопки отмены */
+.btn-cancel {
+    background: #f8f9fa;     
+    color: #666;           
+    border: 2px solid #e0e0e0; 
+}
+
+/* Состояние при наведении на кнопку отмены */
+.btn-cancel:hover {
+    background: #e9ecef;     /* Чуть темнее серый фон */
+    border-color: #416743;   /* Зеленая рамка */
+}
+
+/* Контейнер для карточек статистики */
+.stats-cards {
+    display: grid;                            
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+    gap: 20px;                                 
+    margin-bottom: 40px;                       
+}
+
+/* Стили для отдельной карточки статистики */
+.stat-card {
+    background: white;       
+    padding: 25px;          
+    border-radius: 12px;    
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+    display: flex;          
+    align-items: center;    
+    gap: 20px;               
+    transition: transform 0.3s; 
+}
+
+/* Эффект при наведении на карточку статистики */
+.stat-card:hover {
+    transform: translateY(-5px); 
+}
+
+/* Стили для иконки в карточке статистики */
+.stat-icon {
+    width: 60px;          
+    height: 60px;           
+    background: linear-gradient(135deg, #416743, #45a049); 
+    border-radius: 12px;  
+    display: flex;          
+    align-items: center;    
+    justify-content: center; 
+    color: white;           
+    font-size: 24px;       
+}
+
+/* Заголовок статистики (например, "Всего вопросов") */
+.stat-content h3 {
+    color: #666;            
+    font-size: 14px;         
+    margin-bottom: 5px;     
+    text-transform: uppercase; 
+    letter-spacing: 1px;    
+}
+
+/* Числовое значение статистики */
+.stat-number {
+    font-size: 32px;         
+    font-weight: bold;       
+    color: #2c3e50;          
+}
+
+/* Контейнер для панели быстрых действий */
+.actions-panel {
+    background: white;      
+    padding: 25px;           
+    border-radius: 12px;     
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* Заголовок панели действий */
+.actions-panel h3 {
+    color: #2c3e50;          
+    margin-bottom: 20px;     
+    padding-bottom: 15px;    
+    border-bottom: 2px solid #f0f0f0; 
+}
+
+/* Сетка для кнопок быстрых действий */
+.actions-grid {
+    display: grid;                             
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+    gap: 15px;                                 
+}
+
+/* Кнопка в панели быстрых действий */
+.action-btn {
+    background: #f8f9fa;     
+    color: #2c3e50;          
+    border: 2px solid #e0e0e0;
+    padding: 15px;           
+    border-radius: 8px;      
+    display: flex;          
+    align-items: center;     
+    justify-content: center; 
+    gap: 10px;              
+    font-weight: 600;       
+    cursor: pointer;        
+    transition: all 0.3s;  
+    text-align: center;     
+}
+
+/* Состояние при наведении на кнопку действия */
+.action-btn:hover {
+    background: #e9ecef;     
+    border-color: #416743;   
+    transform: translateY(-2px); 
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    .admin-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    .admin-nav {
+        flex-direction: column;
+    }
+    .filters {
+        flex-direction: column;
+    }
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    .form-actions {
+        flex-direction: column;
+}
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+    .question-options {
+        grid-template-columns: 1fr;
+    }
+    .actions-grid {
+        grid-template-columns: 1fr;
+    }}
