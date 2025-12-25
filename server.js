@@ -1,39 +1,29 @@
 const express = require('express');
-const cors = require('cors');
 const path = require('path');
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
+// Middleware
 app.use(express.json());
 app.use(express.static(__dirname));
 
-// Простая база в памяти вместо SQLite
+// Простая база данных в памяти
 let questions = [
     {
         id: 1,
         question: "Столица России?",
-        option1: "Москва",
-        option2: "Лондон",
-        option3: "Париж",
-        option4: "Берлин",
-        correct_answer: 1,
-        difficulty: 1
+        option1: "Москва", option2: "Лондон", option3: "Париж", option4: "Берлин",
+        correct_answer: 1, difficulty: 1
     },
     {
         id: 2,
         question: "Сколько будет 2+2?",
-        option1: "3",
-        option2: "4",
-        option3: "5",
-        option4: "6",
-        correct_answer: 2,
-        difficulty: 1
+        option1: "3", option2: "4", option3: "5", option4: "6",
+        correct_answer: 2, difficulty: 1
     }
 ];
 
-// Простой API
+// API маршруты
 app.get('/api/questions', (req, res) => {
     res.json(questions);
 });
@@ -54,7 +44,7 @@ app.post('/api/questions', (req, res) => {
     res.json(newQuestion);
 });
 
-// Статические страницы
+// Статические маршруты
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
@@ -67,6 +57,10 @@ app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
+// Запуск сервера
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`✅ Сервер запущен на порту ${PORT}`);
+    console.log(`👉 Главная: https://localhost:${PORT}/`);
+    console.log(`👉 Игра: https://localhost:${PORT}/game`);
+    console.log(`👉 API: https://localhost:${PORT}/api/questions`);
 });
