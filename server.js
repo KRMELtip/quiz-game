@@ -252,6 +252,59 @@ app.get('/api/stats', async (req, res) => {
 });
 
 // Health check
+// Маршрут для глубокой диагностики
+app.get('/debug', async (req, res) => {
+  const report = {
+    timestamp: new Date().toISOString(),
+    nodeVersion: process.version,
+    environment: process.env.NODE_ENV || 'not set',
+    // 1. Проверяем наличие переменных окружения
+    env_variables: {
+      MONGODB_URI: process.env.MONGODB_URI ? '✅ Установлена (первые 30 символов): ' + process.env.MONGODB_URI.substring(0, 30) + '...' : '❌ ОТСУТСТВУЕТ',
+      PORT: process.env.PORT || 'Используется стандартный (3000)'
+    },
+    // 2. Проверяем подключение к MongoDB
+    database_connection: 'Не проверялась',
+    // 3. Проверяем, запущен ли сервер как бессерверная функция Vercel
+    isVercel: !!process.env.VERCEL,
+    // 4. Состояние глобальных переменных
+    globalState: {
+      clientExists: !!client,
+      dbExists: !!db,
+      collectionExists: !!questionsCollection
+    }
+  };
+
+  try {
+    // Попытка прямого подключения к базе данных с коротким таймаутом[citation:3]
+    if (process.env.MONGODB_URI) {
+      const testClient = new MongoClient(process.env.MONGODB_URI, {
+        serverSelectionTimeoutMS: 5000,
+        connectTimeoutMS: 5000,
+      });
+      await testClient.connect();
+      await testClient.db().admin().ping();
+      report.database_connection = '✅ Успешно подключено к MongoDB';
+      await testClient.close();
+    } else {
+      report.database_connection = '❌ Пропущено: отсутствует MONGODB_URI';
+    }
+  } catch (dbError) {
+    report.database_connection = `❌ Ошибка подключения: ${dbError.message}`;
+  }
+
+  // Форматируем и выводим отчет
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.send(`
+    <h1>Диагностика приложения (Vercel)</h1>
+    <pre>${JSON.stringify(report, null, 2)}</pre>
+    <hr>
+    <h3>Дополнительная проверка:</h3>
+    <p><a href="/api/health">/api/health (быстрая проверка)</a></p>
+    <p><a href="/api/questions">/api/questions (тест API)</a></p>
+    <p><a href="/">Главная страница</a></p>
+  `);
+});
 app.get('/api/health', (req, res) => {
     res.json({
         status: 'ok',
