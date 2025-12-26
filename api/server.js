@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const { MongoClient, ObjectId } = require('mongodb');
 const path = require('path');
@@ -6,7 +7,7 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Подключение к MongoDB Atlas
 const uri = process.env.MONGODB_URI;
@@ -332,15 +333,15 @@ app.get('/api/health', (req, res) => {
 
 // Статические файлы
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/index.html'));
+    res.sendFile(path.join(__dirname, 'public/index.html'));
 });
 
 app.get('/game', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/game.html'));
+    res.sendFile(path.join(__dirname, 'public/game.html'));
 });
 
 app.get('/admin', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/admin.html'));
+    res.sendFile(path.join(__dirname, 'public/admin.html'));
 });
 
 // Обработчик 404 для API
