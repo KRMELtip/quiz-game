@@ -8,11 +8,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Вопросы хранятся в памяти
-let questions = [];
-let nextId = 1;
-
-// Начальные вопросы для демонстрации
-const initialQuestions = [
+let questions = [
     {
         id: 1,
         question: "Сколько планет в Солнечной системе?",
@@ -48,139 +44,133 @@ const initialQuestions = [
     }
 ];
 
-// Инициализация данных при запуске
-function initializeData() {
-    questions = [...initialQuestions];
-    nextId = questions.length + 1;
-    console.log(`📊 Инициализировано ${questions.length} вопросов`);
-}
+let nextId = 4;
 
-// Инициализируем данные
-initializeData();
+// Включить CORS
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    next();
+});
 
-// API для работы с вопросами
+// API маршруты
+
+// Health check
+app.get('/api/health', (req, res) => {
+    res.json({ 
+        status: 'ok', 
+        message: 'Server is running',
+        questions: questions.length 
+    });
+});
 
 // Получить все вопросы
 app.get('/api/questions', (req, res) => {
-    console.log(`📥 GET /api/questions (возвращено: ${questions.length})`);
     res.json(questions);
 });
 
 // Получить случайные вопросы
 app.get('/api/questions/random', (req, res) => {
     const count = parseInt(req.query.count) || 10;
-    console.log(`🎲 GET /api/questions/random?count=${count}`);
     
     if (questions.length === 0) {
         return res.json([]);
     }
     
-    // Создаем копию и перемешиваем
+    // Перемешиваем массив
     const shuffled = [...questions]
         .sort(() => Math.random() - 0.5)
         .slice(0, Math.min(count, questions.length));
     
-    console.log(`🎲 Возвращено случайных вопросов: ${shuffled.length}`);
     res.json(shuffled);
 });
 
-// Добавить новый вопрос
+// Добавить вопрос
 app.post('/api/questions', (req, res) => {
-    console.log('➕ POST /api/questions', req.body);
-    
-    const { question, option1, option2, option3, option4, correct_answer, difficulty } = req.body;
-    
-    // Валидация
-    const errors = [];
-    if (!question?.trim()) errors.push('Текст вопроса обязателен');
-    if (!option1?.trim()) errors.push('Вариант 1 обязателен');
-    if (!option2?.trim()) errors.push('Вариант 2 обязателен');
-    if (!option3?.trim()) errors.push('Вариант 3 обязателен');
-    if (!option4?.trim()) errors.push('Вариант 4 обязателен');
-    
-    if (errors.length > 0) {
-        return res.status(400).json({ 
-            error: 'Ошибка валидации',
-            details: errors
+    try {
+        const { question, option1, option2, option3, option4, correct_answer, difficulty } = req.body;
+        
+        // Простая валидация
+        if (!question || !option1 || !option2 || !option3 || !option4) {
+            return res.status(400).json({ error: 'Все поля обязательны' });
+        }
+        
+        const newQuestion = {
+            id: nextId++,
+            question: question.trim(),
+            option1: option1.trim(),
+            option2: option2.trim(),
+            option3: option3.trim(),
+            option4: option4.trim(),
+            correct_answer: parseInt(correct_answer) || 1,
+            difficulty: parseInt(difficulty) || 2,
+            created_at: new Date().toISOString()
+        };
+        
+        questions.push(newQuestion);
+        
+        res.json({
+            success: true,
+            id: newQuestion.id,
+            message: 'Вопрос добавлен'
         });
+    } catch (error) {
+        res.status(500).json({ error: 'Ошибка сервера' });
     }
-    
-    // Создаем новый вопрос
-    const newQuestion = {
-        id: nextId++,
-        question: question.trim(),
-        option1: option1.trim(),
-        option2: option2.trim(),
-        option3: option3.trim(),
-        option4: option4.trim(),
-        correct_answer: parseInt(correct_answer) || 1,
-        difficulty: parseInt(difficulty) || 2,
-        created_at: new Date().toISOString()
-    };
-    
-    questions.push(newQuestion);
-    
-    console.log(`✅ Вопрос добавлен с ID: ${newQuestion.id}`);
-    res.json({
-        success: true,
-        id: newQuestion.id,
-        message: 'Вопрос успешно добавлен',
-        question: newQuestion
-    });
 });
 
 // Обновить вопрос
 app.put('/api/questions/:id', (req, res) => {
-    const id = parseInt(req.params.id);
-    console.log(`✏️ PUT /api/questions/${id}`, req.body);
-    
-    const questionIndex = questions.findIndex(q => q.id === id);
-    
-    if (questionIndex === -1) {
-        return res.status(404).json({ error: 'Вопрос не найден' });
+    try {
+        const id = parseInt(req.params.id);
+        const questionIndex = questions.findIndex(q => q.id === id);
+        
+        if (questionIndex === -1) {
+            return res.status(404).json({ error: 'Вопрос не найден' });
+        }
+        
+        // Обновляем поля
+        const question = questions[questionIndex];
+        if (req.body.question !== undefined) question.question = req.body.question.trim();
+        if (req.body.option1 !== undefined) question.option1 = req.body.option1.trim();
+        if (req.body.option2 !== undefined) question.option2 = req.body.option2.trim();
+        if (req.body.option3 !== undefined) question.option3 = req.body.option3.trim();
+        if (req.body.option4 !== undefined) question.option4 = req.body.option4.trim();
+        if (req.body.correct_answer !== undefined) question.correct_answer = parseInt(req.body.correct_answer);
+        if (req.body.difficulty !== undefined) question.difficulty = parseInt(req.body.difficulty);
+        
+        res.json({ 
+            success: true,
+            message: 'Вопрос обновлен'
+        });
+    } catch (error) {
+        res.status(500).json({ error: 'Ошибка сервера' });
     }
-    
-    // Обновляем поля
-    const question = questions[questionIndex];
-    if (req.body.question !== undefined) question.question = req.body.question.trim();
-    if (req.body.option1 !== undefined) question.option1 = req.body.option1.trim();
-    if (req.body.option2 !== undefined) question.option2 = req.body.option2.trim();
-    if (req.body.option3 !== undefined) question.option3 = req.body.option3.trim();
-    if (req.body.option4 !== undefined) question.option4 = req.body.option4.trim();
-    if (req.body.correct_answer !== undefined) question.correct_answer = parseInt(req.body.correct_answer);
-    if (req.body.difficulty !== undefined) question.difficulty = parseInt(req.body.difficulty);
-    
-    console.log(`✅ Вопрос ${id} обновлен`);
-    res.json({ 
-        success: true,
-        message: 'Вопрос успешно обновлен',
-        question
-    });
 });
 
 // Удалить вопрос
 app.delete('/api/questions/:id', (req, res) => {
-    const id = parseInt(req.params.id);
-    console.log(`🗑️ DELETE /api/questions/${id}`);
-    
-    const initialLength = questions.length;
-    questions = questions.filter(q => q.id !== id);
-    
-    if (questions.length === initialLength) {
-        return res.status(404).json({ error: 'Вопрос не найден' });
+    try {
+        const id = parseInt(req.params.id);
+        const initialLength = questions.length;
+        questions = questions.filter(q => q.id !== id);
+        
+        if (questions.length === initialLength) {
+            return res.status(404).json({ error: 'Вопрос не найден' });
+        }
+        
+        res.json({ 
+            success: true,
+            message: 'Вопрос удален'
+        });
+    } catch (error) {
+        res.status(500).json({ error: 'Ошибка сервера' });
     }
-    
-    console.log(`✅ Вопрос ${id} удален`);
-    res.json({ 
-        success: true,
-        message: 'Вопрос успешно удален'
-    });
 });
 
 // Статистика
 app.get('/api/stats', (req, res) => {
-    console.log('📈 GET /api/stats');
-    
     const stats = {
         total_questions: questions.length,
         easy_count: questions.filter(q => q.difficulty === 1).length,
@@ -188,45 +178,10 @@ app.get('/api/stats', (req, res) => {
         hard_count: questions.filter(q => q.difficulty === 3).length
     };
     
-    console.log('📊 Статистика:', stats);
     res.json(stats);
 });
 
-// Проверка здоровья
-app.get('/api/health', (req, res) => {
-    res.json({
-        status: 'ok',
-        timestamp: new Date().toISOString(),
-        questions_count: questions.length,
-        environment: process.env.NODE_ENV || 'development'
-    });
-});
-
-// Информация для отладки
-app.get('/api/debug', (req, res) => {
-    res.json({
-        app: 'Quiz Game Memory',
-        version: '1.0.0',
-        questions_in_memory: questions.length,
-        next_id: nextId,
-        memory_usage: process.memoryUsage(),
-        uptime: process.uptime(),
-        node_version: process.version
-    });
-});
-
-// Сброс данных (только для отладки)
-app.post('/api/reset', (req, res) => {
-    console.log('🔄 Сброс данных к начальному состоянию');
-    initializeData();
-    res.json({
-        success: true,
-        message: 'Данные сброшены к начальному состоянию',
-        questions_count: questions.length
-    });
-});
-
-// Статические файлы
+// Статические маршруты
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/index.html'));
 });
@@ -239,12 +194,7 @@ app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/admin.html'));
 });
 
-// Обработка 404 для API
-app.use('/api/*', (req, res) => {
-    res.status(404).json({ error: 'API endpoint not found' });
-});
-
-// Обработка 404 для статики
+// Обработка 404
 app.use((req, res) => {
     res.status(404).sendFile(path.join(__dirname, 'public/404.html'));
 });
@@ -252,14 +202,10 @@ app.use((req, res) => {
 // Экспорт для Vercel
 module.exports = app;
 
-// Локальный запуск
+// Локальный запуск (если не Vercel)
 if (require.main === module) {
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {
-        console.log(`🚀 Сервер запущен на порту ${PORT}`);
-        console.log(`📊 Загружено вопросов: ${questions.length}`);
-        console.log(`👉 Главная страница: http://localhost:${PORT}`);
-        console.log(`🎮 Игра: http://localhost:${PORT}/game`);
-        console.log(`⚙️ Админка: http://localhost:${PORT}/admin`);
+        console.log(`Server running on port ${PORT}`);
     });
 }

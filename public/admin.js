@@ -1,7 +1,7 @@
 class AdminPanel {
     constructor() {
         this.questions = [];
-        this.baseUrl = ''; // Используем относительный путь
+       this.baseUrl = window.location.origin;
         this.init();
     }
     
