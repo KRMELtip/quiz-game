@@ -27,3 +27,5 @@ Desktop.ini
 *.ipr
 .atomic_design
 .vercel/
+.env.local
+.env*.local
