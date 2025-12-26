@@ -1,9 +1,6 @@
-require('dotenv').config();
 const express = require('express');
 const { MongoClient, ObjectId } = require('mongodb');
 const path = require('path');
-const app = express();
-const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.json());
@@ -349,20 +346,12 @@ app.use('/api/*', (req, res) => {
     res.status(404).json({ error: 'API endpoint not found' });
 });
 
+app.use(express.static(path.join(__dirname, 'public')));
+
 // Обработчик 404 для статических файлов
 app.use((req, res) => {
     res.status(404).sendFile(path.join(__dirname, '../public/404.html'));
 });
-
-// Для локального запуска
-if (require.main === module) {
-    app.listen(PORT, () => {
-        console.log(`🚀 Сервер запущен на порту ${PORT}`);
-        console.log(`🌐 Доступно по адресу: http://localhost:${PORT}`);
-        console.log(`📁 Статические файлы из: public/`);
-        console.log(`🗄️  База данных: quiz-db`);
-    });
-}
 
 // Экспорт для Vercel
 module.exports = app;
