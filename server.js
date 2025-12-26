@@ -1,13 +1,17 @@
 const express = require('express');
-const { MongoClient, ObjectId } = require('mongodb');
+const { MongoClient } = require('mongodb');
 const path = require('path');
+
+// Инициализация Express
+const app = express();
+const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Подключение к MongoDB Atlas
-const uri = process.env.MONGODB_URI;
+const uri = process.env.MONGODB_URI || "mongodb://localhost:27017/quiz-db";
 let client = null;
 let db = null;
 let questionsCollection = null;
@@ -15,46 +19,32 @@ let questionsCollection = null;
 // Функция подключения к БД
 async function connectDB() {
     try {
-        console.log('🔄 Попытка подключения к MongoDB Atlas...');
+        console.log('🔄 Попытка подключения к MongoDB...');
         
         if (!uri) {
-            console.error('❌ MONGODB_URI не установлена в переменных окружения');
+            console.error('❌ MONGODB_URI не установлена');
             return false;
         }
         
         client = new MongoClient(uri, {
-            serverSelectionTimeoutMS: 10000,
-            connectTimeoutMS: 10000,
+            serverSelectionTimeoutMS: 5000,
+            connectTimeoutMS: 5000,
         });
         
         await client.connect();
-        db = client.db('quiz-db'); // ← Исправлено на quiz-db
+        db = client.db('quiz-db');
         questionsCollection = db.collection('questions');
         
-        // Проверяем подключение
         await db.command({ ping: 1 });
-        console.log('✅ Успешно подключено к MongoDB Atlas');
-        console.log(`📊 База данных: ${db.databaseName}`);
-        console.log(`📄 Коллекция: questions`);
+        console.log('✅ Успешно подключено к MongoDB');
         
-        // Проверяем, есть ли документы
         const count = await questionsCollection.countDocuments();
-        console.log(`📊 Количество вопросов в базе: ${count}`);
+        console.log(`📊 Вопросов в базе: ${count}`);
         
         return true;
         
     } catch (error) {
         console.error('❌ Ошибка подключения к MongoDB:', error.message);
-        console.error('❌ Полная ошибка:', error);
-        
-        if (client) {
-            try {
-                await client.close();
-            } catch (e) {
-                console.error('Ошибка при закрытии клиента:', e.message);
-            }
-        }
-        
         return false;
     }
 }
@@ -62,25 +52,20 @@ async function connectDB() {
 // Подключаемся при старте
 connectDB().then(connected => {
     if (connected) {
-        console.log('✅ MongoDB инициализирована');
+        console.log('✅ База данных готова');
     } else {
-        console.log('⚠️ Не удалось подключиться к MongoDB');
+        console.log('⚠️ База данных недоступна');
     }
 });
 
-// Middleware для проверки подключения
+// Middleware для проверки подключения БД
 app.use('/api/*', async (req, res, next) => {
     if (!questionsCollection) {
-        console.log('🔄 Попытка переподключения для API запроса...');
         const connected = await connectDB();
         if (!connected) {
             return res.status(503).json({ 
                 error: 'База данных недоступна',
-                details: 'Проверьте подключение к MongoDB Atlas',
-                env_check: {
-                    mongodb_uri_set: !!process.env.MONGODB_URI,
-                    uri_length: process.env.MONGODB_URI ? process.env.MONGODB_URI.length : 0
-                }
+                details: 'Проверьте подключение к MongoDB'
             });
         }
     }
@@ -90,18 +75,15 @@ app.use('/api/*', async (req, res, next) => {
 // API маршруты
 app.get('/api/questions', async (req, res) => {
     try {
-        console.log('📥 GET /api/questions');
-        
         const questions = await questionsCollection
             .find({})
             .sort({ id: 1 })
             .toArray();
         
-        console.log(`📊 Возвращено вопросов: ${questions.length}`);
         res.json(questions);
         
     } catch (err) {
-        console.error('❌ Ошибка в /api/questions:', err);
+        console.error('❌ Ошибка загрузки вопросов:', err);
         res.status(500).json({ 
             error: 'Ошибка сервера',
             message: err.message
@@ -112,34 +94,27 @@ app.get('/api/questions', async (req, res) => {
 app.get('/api/questions/random', async (req, res) => {
     try {
         const count = parseInt(req.query.count) || 10;
-        console.log(`🎲 GET /api/questions/random?count=${count}`);
         
-        // Сначала получаем все вопросы
         const allQuestions = await questionsCollection.find({}).toArray();
         
         if (allQuestions.length === 0) {
-            console.log('📭 Нет вопросов в базе');
             return res.json([]);
         }
         
-        // Перемешиваем и берем нужное количество
         const shuffled = [...allQuestions]
             .sort(() => Math.random() - 0.5)
             .slice(0, Math.min(count, allQuestions.length));
         
-        console.log(`🎲 Возвращено случайных вопросов: ${shuffled.length}`);
         res.json(shuffled);
         
     } catch (err) {
-        console.error('❌ Ошибка в /api/questions/random:', err);
+        console.error('❌ Ошибка загрузки случайных вопросов:', err);
         res.status(500).json({ error: err.message });
     }
 });
 
 app.post('/api/questions', async (req, res) => {
     try {
-        console.log('➕ POST /api/questions', req.body);
-        
         const { question, option1, option2, option3, option4, correct_answer, difficulty } = req.body;
         
         // Валидация
@@ -179,10 +154,8 @@ app.post('/api/questions', async (req, res) => {
             created_at: new Date().toISOString()
         };
         
-        console.log('💾 Сохранение вопроса с ID:', newId);
         const result = await questionsCollection.insertOne(newQuestion);
         
-        console.log('✅ Вопрос сохранен, insertedId:', result.insertedId);
         res.json({
             success: true,
             id: newId,
@@ -191,7 +164,7 @@ app.post('/api/questions', async (req, res) => {
         });
         
     } catch (err) {
-        console.error('❌ Ошибка в POST /api/questions:', err);
+        console.error('❌ Ошибка добавления вопроса:', err);
         res.status(500).json({ 
             error: 'Ошибка при сохранении вопроса',
             details: err.message
@@ -202,13 +175,11 @@ app.post('/api/questions', async (req, res) => {
 app.put('/api/questions/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        console.log(`✏️ PUT /api/questions/${id}`, req.body);
         
         const updateData = {
             updated_at: new Date().toISOString()
         };
         
-        // Добавляем только те поля, которые были переданы
         if (req.body.question !== undefined) updateData.question = req.body.question.trim();
         if (req.body.option1 !== undefined) updateData.option1 = req.body.option1.trim();
         if (req.body.option2 !== undefined) updateData.option2 = req.body.option2.trim();
@@ -226,14 +197,13 @@ app.put('/api/questions/:id', async (req, res) => {
             return res.status(404).json({ error: 'Вопрос не найден' });
         }
         
-        console.log(`✅ Вопрос ${id} обновлен`);
         res.json({ 
             success: true,
             message: 'Вопрос обновлен'
         });
         
     } catch (err) {
-        console.error('❌ Ошибка в PUT /api/questions/:id:', err);
+        console.error('❌ Ошибка обновления вопроса:', err);
         res.status(500).json({ error: err.message });
     }
 });
@@ -241,7 +211,6 @@ app.put('/api/questions/:id', async (req, res) => {
 app.delete('/api/questions/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        console.log(`🗑️ DELETE /api/questions/${id}`);
         
         const result = await questionsCollection.deleteOne({ id: parseInt(id) });
         
@@ -249,22 +218,19 @@ app.delete('/api/questions/:id', async (req, res) => {
             return res.status(404).json({ error: 'Вопрос не найден' });
         }
         
-        console.log(`✅ Вопрос ${id} удален`);
         res.json({ 
             success: true,
             message: 'Вопрос удален'
         });
         
     } catch (err) {
-        console.error('❌ Ошибка в DELETE /api/questions/:id:', err);
+        console.error('❌ Ошибка удаления вопроса:', err);
         res.status(500).json({ error: err.message });
     }
 });
 
 app.get('/api/stats', async (req, res) => {
     try {
-        console.log('📈 GET /api/stats');
-        
         const total = await questionsCollection.countDocuments();
         const easy = await questionsCollection.countDocuments({ difficulty: 1 });
         const medium = await questionsCollection.countDocuments({ difficulty: 2 });
@@ -277,44 +243,11 @@ app.get('/api/stats', async (req, res) => {
             hard_count: hard
         };
         
-        console.log('📊 Статистика:', stats);
         res.json(stats);
         
     } catch (err) {
-        console.error('❌ Ошибка в /api/stats:', err);
+        console.error('❌ Ошибка загрузки статистики:', err);
         res.status(500).json({ error: err.message });
-    }
-});
-
-// Тестовый эндпоинт для диагностики
-app.get('/api/debug', async (req, res) => {
-    try {
-        const collections = await db.listCollections().toArray();
-        const collectionNames = collections.map(c => c.name);
-        
-        const stats = {
-            connected: !!questionsCollection,
-            database: db.databaseName,
-            collections: collectionNames,
-            questions_count: await questionsCollection?.countDocuments() || 0,
-            env: {
-                mongodb_uri_exists: !!process.env.MONGODB_URI,
-                node_env: process.env.NODE_ENV || 'development',
-                port: PORT
-            }
-        };
-        
-        res.json(stats);
-        
-    } catch (error) {
-        res.json({
-            connected: false,
-            error: error.message,
-            env: {
-                mongodb_uri_exists: !!process.env.MONGODB_URI,
-                node_env: process.env.NODE_ENV
-            }
-        });
     }
 });
 
@@ -323,8 +256,7 @@ app.get('/api/health', (req, res) => {
     res.json({
         status: 'ok',
         timestamp: new Date().toISOString(),
-        database: questionsCollection ? 'connected' : 'disconnected',
-        database_name: 'quiz-db'
+        database: questionsCollection ? 'connected' : 'disconnected'
     });
 });
 
@@ -341,17 +273,18 @@ app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/admin.html'));
 });
 
-// Обработчик 404 для API
-app.use('/api/*', (req, res) => {
-    res.status(404).json({ error: 'API endpoint not found' });
-});
-
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Обработчик 404 для статических файлов
+// Обработчик 404
 app.use((req, res) => {
-    res.status(404).sendFile(path.join(__dirname, '../public/404.html'));
+    res.status(404).sendFile(path.join(__dirname, 'public/404.html'));
 });
+
+// Запуск сервера
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`🚀 Сервер запущен на порту ${PORT}`);
+        console.log(`🌐 Откройте http://localhost:${PORT}`);
+    });
+}
 
 // Экспорт для Vercel
 module.exports = app;
